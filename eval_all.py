@@ -8,6 +8,10 @@ from ipywidgets import widgets
 import pandas as pd
 from math import pi
 
+timelab = 'Time [s]'
+torquelab = 'Joint Torque [Nm]'
+deglab = 'Joint Angle [deg]'
+
 
 def concat_polys(poti_polys, force_polys):
     """make 1 dicitionary out of the two"""
@@ -77,7 +81,7 @@ def plot_data(data_list: list, index=0):
     plt.plot(time, data['B'], label='B')
     plt.plot(time, data['K'], label='K')
     plt.legend()
-    plt.xlabel('Time [s]')
+    plt.xlabel(timelab)
     plt.ylabel('Degree [°]')
 
     plt.subplot(2, 1, 2)
@@ -87,12 +91,15 @@ def plot_data(data_list: list, index=0):
     plt.plot(time, np.array(data['DRUCK']) -
              np.array(data['ZUG']), label='external', color='red')
     plt.legend()
-    plt.xlabel('Time [s]')
+    plt.xlabel(timelab)
     plt.ylabel('Force [N]')
 
 
-def perform_model_analysis(model: KinExoParams, data_list: list, index: int):
+def perform_model_analysis(model: KinExoParams, data_list: list, index: int, true_data=False):
     """perform the elementwise analysis of the model"""
+    if true_data:
+        plot_data(data_list, index)
+
     data = pd.DataFrame(data_list[index])
     time = data_list[index]['ms']
     time = [ele / 1000 for ele in time]
@@ -132,48 +139,41 @@ def perform_model_analysis(model: KinExoParams, data_list: list, index: int):
     plt.grid(0.25)
     plt.plot(time, phi_mcp_arr)
     plt.ylim([deg_min, deg_max])
-    #plt.xlabel('Time [s]')
-    plt.ylabel('Joint Angle [deg]')
+    plt.ylabel(deglab)
 
     plt.subplot(2, 3, 2)
     plt.title('Angle Trajectory PIP')
     plt.grid(0.25)
     plt.plot(time, phi_pip_arr, color='green')
     plt.ylim([deg_min, deg_max])
-    #plt.xlabel('Time [s]')
-    #plt.ylabel('Joint Angle [deg]')
 
     plt.subplot(2, 3, 3)
     plt.title('Angle Trajectory DIP')
     plt.grid(0.25)
     plt.plot(time, phi_dip_arr, color='red')
     plt.ylim([deg_min, deg_max])
-    #plt.xlabel('Time [s]')
-    #plt.ylabel('Joint Angle [deg]')
 
     plt.subplot(2, 3, 4)
     plt.title('Torque Trajectory MCP')
     plt.grid(0.25)
     plt.plot(time, m_mcp_arr)
     plt.ylim([m_min, m_max])
-    plt.xlabel('Time [s]')
-    plt.ylabel('Joint Torque [Nm]')
+    plt.xlabel(timelab)
+    plt.ylabel(torquelab)
 
     plt.subplot(2, 3, 5)
     plt.title('Torque Trajectory PIP')
     plt.grid(0.25)
     plt.plot(time, m_dip_arr, color='green')
     plt.ylim([m_min, m_max])
-    plt.xlabel('Time [s]')
-    #plt.ylabel('Joint Torque [Nm]')
+    plt.xlabel(timelab)
 
     plt.subplot(2, 3, 6)
     plt.title('Torque Trajectory DIP')
     plt.grid(0.25)
     plt.plot(time, m_pip_arr, color='red')
     plt.ylim([m_min, m_max])
-    plt.xlabel('Time [s]')
-    #plt.ylabel('Joint Torque [Nm]')
+    plt.xlabel(timelab)
 
 
 PATH = './measure_forces'
@@ -189,9 +189,9 @@ model = KinExoParams()
 # %%
 
 
-def update(index=110):
+def update(index=110, true_data=False):
     #plot_data(data_list, index)
-    perform_model_analysis(model, data_list, index)
+    perform_model_analysis(model, data_list, index, true_data=true_data)
 
 
 widgets.interactive(update)

@@ -161,7 +161,7 @@ def perform_analysis(poly_deg=2, show_poly=False, longval=True):
     return force_polys
 
 
-force_polys = perform_analysis(poly_deg=1, show_poly=True)
+force_polys = perform_analysis(poly_deg=3, show_poly=True)
 
 
 # %%

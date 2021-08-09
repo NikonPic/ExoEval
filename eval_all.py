@@ -1,4 +1,5 @@
 # %%
+from exoskeleton.exo_workflow import KinExoParams
 from visualize import plot_data, plot_fitted_arrs
 from force_kalib.eval_forces import force_polys
 from poti_kalib.poti_eval import poti_polys
@@ -122,7 +123,8 @@ def build_average_fitted_data(model, data_list, id_list):
 
     arr_fitted_data = []
     for idx in id_list:
-        arr_fitted_data.append(perform_model_analysis(model, data_list, idx))
+        arr_fitted_data.append(perform_model_analysis(
+            model, data_list, idx, plotit=False))
 
     avg_arrs = {
         'time': arr_fitted_data[0]['time']
@@ -142,7 +144,7 @@ def build_average_fitted_data(model, data_list, id_list):
 
 
 PATH = './measure_forces'
-FILENAME = 'chrissi_ohne_inter.txt'
+FILENAME = 'niko_ohne_inter.txt'
 
 with open(f'{PATH}/{FILENAME}') as f:
     lines = f.readlines()

@@ -80,7 +80,7 @@ class KinExoParams(object):
     h_pd = 7
 
     # Abstand Oberseite der Finger zu Gelenken der Phalanxmodule
-    h_ap = 5.5  # TODO:
+    h_ap = 5.5
 
     # Position Gelenk A: Messen notwendig, Position relativ zu MCP muss bestimmt
     # werden. Hier Werte aus mechanischem Finger gegeben, real aus Foto/Scan

@@ -7,6 +7,7 @@ import numpy as np
 from exoskeleton.individual_params import get_model_by_filename
 from ipywidgets import widgets
 import pandas as pd
+import matplotlib.pyplot as plt
 
 timelab = 'Time [s]'
 torquelab = 'Joint Torque [Nm]'
@@ -118,7 +119,7 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
     return fitted_data
 
 
-def build_average_fitted_data(model, data_list, id_list):
+def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.figure(figsize=(12, 8)), filename='none'):
     """apply the model on the measurements acc to id list and plot the fitted arrays"""
 
     arr_fitted_data = []
@@ -140,30 +141,47 @@ def build_average_fitted_data(model, data_list, id_list):
         avg_arrs[f'{key}_m'] = np.mean(loc_arrs, axis=0)
         avg_arrs[f'{key}_std'] = np.std(loc_arrs, axis=0)
 
-    plot_fitted_arrs(avg_arrs, stats=True)
+    plot = plot_fitted_arrs(avg_arrs, stats=True,
+                            color=color, plot=plot, filename=filename)
+    return plot
 
 
-PATH = './measure_forces'
-FILENAME = 'niko_ohne_inter.txt'
+def perform_all(filename, color, plot):
+    with open(f'{PATH}/{filename}') as f:
+        lines = f.readlines()
 
-with open(f'{PATH}/{FILENAME}') as f:
-    lines = f.readlines()
-
-all_polys = concat_polys(poti_polys, force_polys)
-all_data = lines2data(lines, all_polys)
-data_list = all_data_2_list(all_data)
-model = get_model_by_filename(FILENAME)
+    all_polys = concat_polys(poti_polys, force_polys)
+    all_data = lines2data(lines, all_polys)
+    data_list = all_data_2_list(all_data)
+    model = get_model_by_filename(filename)
+    plot = build_average_fitted_data(
+        model, data_list, [1, 2, 3, 4, 5, 7], color=color, plot=plot, filename=filename)
+    return plot
 
 # %%
 
 
-def update(index=5, true_data=False):
-    perform_model_analysis(model, data_list, index, true_data=true_data)
+if __name__ == '__main__':
 
+    PATH = './measure_forces'
 
-widgets.interactive(update)
-# %%
-build_average_fitted_data(model, data_list, [1, 2, 3, 4, 5, 7])
+    filenames = [
+        'niko_ohne_inter.txt',
+        'tina_ohne_inter.txt',
+        'chrissi_ohne_inter.txt'
+    ]
+
+    colors = [
+        'blue',
+        'green',
+        'red'
+    ]
+    plot = plt.figure(figsize=(12, 8))
+
+    for filename, color in zip(filenames, colors):
+        plot = perform_all(filename, color, plot)
+    plt.subplot(2, 3, 6)
+    plt.legend()
 
 
 # %%

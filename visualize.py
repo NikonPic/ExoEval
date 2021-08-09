@@ -8,7 +8,7 @@ torquelab = 'Joint Torque [Nm]'
 deglab = 'Joint Angle [deg]'
 
 
-def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False):
+def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none'):
     """plot the arrays fitted to the model"""
 
     time = fitted_data['time']
@@ -39,79 +39,91 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False):
         m_pip_arr = fitted_data['m_2']
         m_dip_arr = fitted_data['m_3']
 
-    deg_max = max(max(phi_pip_arr), max(
-        phi_mcp_arr), max(phi_dip_arr)) + 10
-    deg_min = min(min(phi_pip_arr), min(
-        phi_mcp_arr), min(phi_dip_arr)) - 10
-
     if buil_ymax:
+        deg_max = max(max(phi_pip_arr), max(
+            phi_mcp_arr), max(phi_dip_arr)) + 10
+        deg_min = min(min(phi_pip_arr), min(
+            phi_mcp_arr), min(phi_dip_arr)) - 10
+
         m_min = min(min(m_pip_arr), min(m_mcp_arr), min(m_dip_arr)) - 0.05
         m_max = max(max(m_pip_arr), max(m_mcp_arr), max(m_dip_arr)) + 0.05
 
     else:
+        deg_min = -80
+        deg_max = 20
+
         m_min = -0.15
         m_max = 0.10
 
-    plt.figure(figsize=(12, 8))
+    cur_color = 'blue' if color == 'none' else color
 
     plt.subplot(2, 3, 1)
     plt.title('Angle Trajectory MCP')
     plt.grid(0.25)
-    plt.plot(time, phi_mcp_arr)
+    plt.plot(time, phi_mcp_arr, color=cur_color)
     if stats:
         plt.fill_between(time, phi_mcp_arr + phi_mcp_arr_std, phi_mcp_arr -
-                         phi_mcp_arr_std, facecolor='blue', interpolate=True, alpha=0.2)
+                         phi_mcp_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([deg_min, deg_max])
     plt.ylabel(deglab)
 
+    cur_color = 'green' if color == 'none' else color
     plt.subplot(2, 3, 2)
     plt.title('Angle Trajectory PIP')
     plt.grid(0.25)
-    plt.plot(time, phi_pip_arr, color='green')
+    plt.plot(time, phi_pip_arr, color=cur_color)
     if stats:
         plt.fill_between(time, phi_pip_arr + phi_pip_arr_std, phi_pip_arr -
-                         phi_pip_arr_std, facecolor='green', interpolate=True, alpha=0.2)
+                         phi_pip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([deg_min, deg_max])
 
+    cur_color = 'red' if color == 'none' else color
     plt.subplot(2, 3, 3)
     plt.title('Angle Trajectory DIP')
     plt.grid(0.25)
-    plt.plot(time, phi_dip_arr, color='red')
+    plt.plot(time, phi_dip_arr, color=cur_color)
     if stats:
         plt.fill_between(time, phi_dip_arr + phi_dip_arr_std, phi_dip_arr -
-                         phi_dip_arr_std, facecolor='red', interpolate=True, alpha=0.2)
+                         phi_dip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([deg_min, deg_max])
 
+    cur_color = 'blue' if color == 'none' else color
     plt.subplot(2, 3, 4)
     plt.title('Torque Trajectory MCP')
     plt.grid(0.25)
-    plt.plot(time, m_mcp_arr)
+    plt.plot(time, m_mcp_arr, color=cur_color)
     if stats:
         plt.fill_between(time, m_mcp_arr + m_mcp_arr_std, m_mcp_arr -
-                         m_mcp_arr_std, facecolor='blue', interpolate=True, alpha=0.2)
+                         m_mcp_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
     plt.xlabel(timelab)
     plt.ylabel(torquelab)
 
+    cur_color = 'green' if color == 'none' else color
     plt.subplot(2, 3, 5)
     plt.title('Torque Trajectory PIP')
     plt.grid(0.25)
-    plt.plot(time, m_dip_arr, color='green')
+    plt.plot(time, m_dip_arr, color=cur_color)
     if stats:
         plt.fill_between(time, m_dip_arr + m_dip_arr_std, m_dip_arr -
-                         m_dip_arr_std, facecolor='green', interpolate=True, alpha=0.2)
+                         m_dip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
     plt.xlabel(timelab)
 
+    if filename != 'none':
+        filename = filename.split('_')[0]
+
+    cur_color = 'red' if color == 'none' else color
     plt.subplot(2, 3, 6)
     plt.title('Torque Trajectory DIP')
     plt.grid(0.25)
-    plt.plot(time, m_pip_arr, color='red')
+    plt.plot(time, m_pip_arr, color=cur_color, label=filename)
     if stats:
         plt.fill_between(time, m_pip_arr + m_pip_arr_std, m_pip_arr -
-                         m_pip_arr_std, facecolor='red', interpolate=True, alpha=0.2)
+                         m_pip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
     plt.xlabel(timelab)
+    return plt
 
 
 def plot_data(data_list: list, index=0):

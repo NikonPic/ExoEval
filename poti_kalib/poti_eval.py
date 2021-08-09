@@ -50,7 +50,7 @@ poti_polys['B'] = fit_poti(grad, b_arr, offset=-99.719)
 plt.subplot(3, 1, 2)
 poti_polys['A'] = fit_poti(grad, a_arr, offset=-48.569)
 plt.subplot(3, 1, 3)
-poti_polys['K'] = fit_poti(grad, k_arr, offset=-16)
+poti_polys['K'] = fit_poti(grad, k_arr, offset=-36)  # -16 original!
 # %%
 #poti_polys['K'](2257) - 90
 # %%

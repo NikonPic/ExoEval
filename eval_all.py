@@ -1,12 +1,11 @@
 # %%
+from visualize import plot_data, plot_fitted_arrs
 from force_kalib.eval_forces import force_polys
 from poti_kalib.poti_eval import poti_polys
-import matplotlib.pyplot as plt
 import numpy as np
-from exo_workflow import KinExoParams
+from exoskeleton.individual_params import get_model_by_filename
 from ipywidgets import widgets
 import pandas as pd
-from math import pi
 
 timelab = 'Time [s]'
 torquelab = 'Joint Torque [Nm]'
@@ -71,31 +70,7 @@ def all_data_2_list(all_data):
     return data_list
 
 
-def plot_data(data_list: list, index=0):
-    data = data_list[index]
-    plt.figure(figsize=(14, 14))
-    time = [ele / 1000 for ele in data['ms']]
-    plt.subplot(2, 1, 1)
-    plt.grid(0.25)
-    plt.plot(time, data['A'], label='A')
-    plt.plot(time, data['B'], label='B')
-    plt.plot(time, data['K'], label='K')
-    plt.legend()
-    plt.xlabel(timelab)
-    plt.ylabel('Degree [°]')
-
-    plt.subplot(2, 1, 2)
-    plt.grid(0.25)
-    plt.plot(time, data['ZUG'], label='ZUG', linestyle='-.')
-    plt.plot(time, data['DRUCK'], label='DRUCK', linestyle='-.')
-    plt.plot(time, np.array(data['DRUCK']) -
-             np.array(data['ZUG']), label='external', color='red')
-    plt.legend()
-    plt.xlabel(timelab)
-    plt.ylabel('Force [N]')
-
-
-def perform_model_analysis(model: KinExoParams, data_list: list, index: int, true_data=False):
+def perform_model_analysis(model, data_list: list, index: int, true_data=False, plotit=True):
     """perform the elementwise analysis of the model"""
     if true_data:
         plot_data(data_list, index)
@@ -126,73 +101,67 @@ def perform_model_analysis(model: KinExoParams, data_list: list, index: int, tru
         m_pip_arr[index] = m_pip
         m_dip_arr[index] = m_dip
 
-    deg_max = max(max(phi_pip_arr), max(phi_mcp_arr), max(phi_dip_arr)) + 10
-    deg_min = min(min(phi_pip_arr), min(phi_mcp_arr), min(phi_dip_arr)) - 10
+    fitted_data = {
+        'time': time,
+        'deg_1': phi_mcp_arr,
+        'deg_2': phi_pip_arr,
+        'deg_3': phi_dip_arr,
+        'm_1': m_mcp_arr,
+        'm_2': m_pip_arr,
+        'm_3': m_dip_arr,
+    }
 
-    m_max = max(max(m_pip_arr), max(m_mcp_arr), max(m_dip_arr)) + 0.02
-    m_min = min(min(m_pip_arr), min(m_mcp_arr), min(m_dip_arr)) - 0.02
+    if plotit:
+        plot_fitted_arrs(fitted_data)
 
-    plt.figure(figsize=(12, 8))
+    return fitted_data
 
-    plt.subplot(2, 3, 1)
-    plt.title('Angle Trajectory MCP')
-    plt.grid(0.25)
-    plt.plot(time, phi_mcp_arr)
-    plt.ylim([deg_min, deg_max])
-    plt.ylabel(deglab)
 
-    plt.subplot(2, 3, 2)
-    plt.title('Angle Trajectory PIP')
-    plt.grid(0.25)
-    plt.plot(time, phi_pip_arr, color='green')
-    plt.ylim([deg_min, deg_max])
+def build_average_fitted_data(model, data_list, id_list):
+    """apply the model on the measurements acc to id list and plot the fitted arrays"""
 
-    plt.subplot(2, 3, 3)
-    plt.title('Angle Trajectory DIP')
-    plt.grid(0.25)
-    plt.plot(time, phi_dip_arr, color='red')
-    plt.ylim([deg_min, deg_max])
+    arr_fitted_data = []
+    for idx in id_list:
+        arr_fitted_data.append(perform_model_analysis(model, data_list, idx))
 
-    plt.subplot(2, 3, 4)
-    plt.title('Torque Trajectory MCP')
-    plt.grid(0.25)
-    plt.plot(time, m_mcp_arr)
-    plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
-    plt.ylabel(torquelab)
+    avg_arrs = {
+        'time': arr_fitted_data[0]['time']
+    }
 
-    plt.subplot(2, 3, 5)
-    plt.title('Torque Trajectory PIP')
-    plt.grid(0.25)
-    plt.plot(time, m_dip_arr, color='green')
-    plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
+    # now build the means and stds
+    keylist = list(arr_fitted_data[0].keys())
+    keylist.remove('time')
 
-    plt.subplot(2, 3, 6)
-    plt.title('Torque Trajectory DIP')
-    plt.grid(0.25)
-    plt.plot(time, m_pip_arr, color='red')
-    plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
+    for key in keylist:
+        loc_arrs = [np.array(arr_fitted_data[index][key])
+                    for index in range(len(arr_fitted_data))]
+        avg_arrs[f'{key}_m'] = np.mean(loc_arrs, axis=0)
+        avg_arrs[f'{key}_std'] = np.std(loc_arrs, axis=0)
+
+    plot_fitted_arrs(avg_arrs, stats=True)
 
 
 PATH = './measure_forces'
+FILENAME = 'chrissi_ohne_inter.txt'
 
-with open(f'{PATH}/log_1.txt') as f:
+with open(f'{PATH}/{FILENAME}') as f:
     lines = f.readlines()
 
 all_polys = concat_polys(poti_polys, force_polys)
 all_data = lines2data(lines, all_polys)
 data_list = all_data_2_list(all_data)
-model = KinExoParams()
+model = get_model_by_filename(FILENAME)
 
 # %%
 
 
-def update(index=110, true_data=False):
-    #plot_data(data_list, index)
+def update(index=5, true_data=False):
     perform_model_analysis(model, data_list, index, true_data=true_data)
 
 
 widgets.interactive(update)
+# %%
+build_average_fitted_data(model, data_list, [1, 2, 3, 4, 5, 7])
+
+
 # %%

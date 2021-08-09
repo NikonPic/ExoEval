@@ -40,15 +40,10 @@ def get_point(a_x, a_y, l_1, b_x, b_y, l_2):
     A = b_x-a_x
     B = b_y-a_y
     C_A = (A**2 + B**2 + l_1**2 - l_2**2)/(2*l_1)
-    C_B = (A**2 + B**2 + l_2**2 - l_1**2)/-(2*l_2)
 
     # Winkel zwischen x-Achse Weltsystem und Vektor BC = alpha
     # Quadratische Gleichung mit zwei Lösungen, Wahl positive Lösung
     ang_a = 2*atan((B+sqrt(A**2+B**2-C_A**2))/(A+C_A))
-
-    # Angle between x-axis worldframe and vector AC = beta
-    # Quadratische Gleichung mit zwei Lösungen, Wahl positive Lösung
-    ang_b = 2*atan((B+sqrt(A**2+B**2-C_B**2))/(A+C_B))
 
     p_x = a_x+cos(ang_a)*l_1
     p_y = a_y+sin(ang_a)*l_1
@@ -58,21 +53,7 @@ def get_point(a_x, a_y, l_1, b_x, b_y, l_2):
 # %% Exo Dataclass
 
 
-class KinExoParams():
-    # TODO: Paramterer über Abbildung 5.2 bestimmen
-    # l_G1
-    # l_pp
-    # l_pm
-    # l_pd
-
-    # h_pd
-    # h_pd
-    # h_pp
-
-    # h_ap -> neu je nach glied
-
-    # TODO: Abbildung 5.9
-    # P12X etc.
+class KinExoParams(object):
 
     # Gliedlaengen Kinematik (s.Skizze)
     l_1 = 45
@@ -155,15 +136,53 @@ class KinExoParams():
     m2 = 0.0
     m3 = 0.0
 
-    def get_const_param(self, d):
+    def __init__(self, d_gen=12):
+        """init the class"""
+        self.get_const_param(d_gen)
+
+    def __call__(self, phi_a, phi_b, phi_k, f_actor) -> list:
+        """perform forward call"""
+        phi_a *= (pi / 180)
+        phi_b *= (pi / 180)
+        phi_k *= (pi / 180)
+
+        self.get_kin_config(phi_a, phi_b, phi_k, f_actor)
+        return [self.phi_mcp, self.phi_pip, self.phi_dip, self.m_mcp, self.m_pip, self.m_dip]
+
+    def set_individual_params(self, ind_data: dict):
+        """set the individual parameters"""
+
+        # iterate trough the individual keys and set the values
+        for loc_key in ind_data.keys():
+            setattr(self, loc_key, ind_data[loc_key])
+
+        # update params to calculate
+        self.l_g1 = sqrt((0-self.A[0])**2+(0-self.A[1])**2)
+        self.psi_2 = acos((-self.A[0])/self.l_g1)
+        self.B = [self.A[0]+self.l_5 *
+                  cos(self.psi_1), self.A[1]+self.l_5*sin(self.psi_1)]
+        self.d_b = sqrt((0-self.akt_x)**2+(0-self.akt_y)**2)
+        self.alpha_const = pi + get_angle(0, 0, self.akt_x, self.akt_y)
+        self.l_c1 = self.l_pp/2
+        self.l_c2 = self.l_pm/2
+        self.l_c3 = self.l_pd/2
+        self.p_11y = self.h_pp + self.h_ap
+        self.p_12y = self.h_pp + self.h_ap
+        self.p_2y = self.h_pm + self.h_ap
+        self.p_3y = self.h_pd + self.h_ap
+
+        # update all further parameters
+        self.get_const_param(self.d_gen)
+
+    def get_const_param(self, d_gen):
         """
         getConstParam berechnet die durch den Finger vorgegeben kinematischen
         Parameter bei mittiger Montage der PD und PM Attachments
         Input: Abstand MCP - erstes PP Att. Gelenk
         """
         self.l_g2 = sqrt((self.h_ap + self.h_pp)**2 +
-                         (self.l_pp - d - self.l_9)**2)
-        self.l_g3 = sqrt((self.h_ap + self.h_pp)**2 + (d)**2)
+                         (self.l_pp - d_gen - self.l_9)**2)
+        self.l_g3 = sqrt((self.h_ap + self.h_pp)**2 + (d_gen)**2)
         self.l_g4 = sqrt((self.h_ap + self.h_pm)**2 + (0.5*self.l_pm)**2)
         self.l_g5 = self.l_g4
 
@@ -171,12 +190,8 @@ class KinExoParams():
         self.l_g6 = sqrt((self.h_ap + self.h_pd)**2+(0.5*self.l_pd)**2)
         self.psi_6 = acos((self.l_pd/2)/self.l_g6)
         self.psi_5 = acos((self.l_pm/2)/self.l_g4)
-        self.psi_4 = acos(d/self.l_g3)
-        self.psi_3 = acos((self.l_pp - d - self.l_9)/self.l_g2)
-
-    def __init__(self, d=12):
-        """init the class"""
-        self.get_const_param(d)
+        self.psi_4 = acos(d_gen/self.l_g3)
+        self.psi_3 = acos((self.l_pp - d_gen - self.l_9)/self.l_g2)
 
     def get_kin_config(self, phi_a, phi_b, phi_k, f_actor):
         # kinematic config
@@ -194,15 +209,6 @@ class KinExoParams():
         self.get_actuation_force(f_actor)
         self.get_all_rod_forces()
         self.get_joint_torques()
-
-    def __call__(self, phi_a, phi_b, phi_k, f_actor) -> list:
-        """perform forward call"""
-        phi_a *= (pi / 180)
-        phi_b *= (pi / 180)
-        phi_k *= (pi / 180)
-
-        self.get_kin_config(phi_a, phi_b, phi_k, f_actor)
-        return [self.phi_mcp, self.phi_pip, self.phi_dip, self.m_mcp, self.m_pip, self.m_dip]
 
     def joint_5_1(self, phi_a, phi_b):
         """Gelenkfuenfeck 1"""

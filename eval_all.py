@@ -1,11 +1,9 @@
 # %%
-from exoskeleton.exo_workflow import KinExoParams
-from visualize import plot_data, plot_fitted_arrs
+from visualize import plot_2_tiff, plot_data, plot_fitted_arrs
 from force_kalib.eval_forces import force_polys
 from poti_kalib.poti_eval import poti_polys
 import numpy as np
 from exoskeleton.individual_params import get_model_by_filename
-from ipywidgets import widgets
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -119,7 +117,7 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
     return fitted_data
 
 
-def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.figure(figsize=(12, 8)), filename='none'):
+def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.figure(figsize=(12, 8)), filename='none', ymax=False):
     """apply the model on the measurements acc to id list and plot the fitted arrays"""
 
     arr_fitted_data = []
@@ -142,7 +140,7 @@ def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.
         avg_arrs[f'{key}_std'] = np.std(loc_arrs, axis=0)
 
     plot = plot_fitted_arrs(avg_arrs, stats=True,
-                            color=color, plot=plot, filename=filename)
+                            color=color, plot=plot, filename=filename, buil_ymax=ymax)
     return plot
 
 
@@ -157,6 +155,28 @@ def perform_all(filename, color, plot):
     plot = build_average_fitted_data(
         model, data_list, [1, 2, 3, 4, 5, 7], color=color, plot=plot, filename=filename)
     return plot
+
+
+def draw_interception():
+    filename = 'niko_mit_inter.txt'
+    with open(f'{PATH}/{filename}') as f:
+        lines = f.readlines()
+    plot = plt.figure(figsize=(12, 10))
+
+    for ind in range(1, 7):
+        plt.subplot(2, 3, ind)
+        plt.vlines(5.1, -70, 30, linestyles='-.', linewidth=1, color='black')
+        plt.vlines(8, -70, 30, linestyles='-.', linewidth=1, color='black')
+
+        plt.vlines(18, -70, 30, linestyles='-.', linewidth=1, color='black')
+        plt.vlines(20, -70, 30, linestyles='-.', linewidth=1, color='black')
+
+    all_polys = concat_polys(poti_polys, force_polys)
+    all_data = lines2data(lines, all_polys)
+    data_list = all_data_2_list(all_data)
+    model = get_model_by_filename(filename)
+    plot = build_average_fitted_data(
+        model, data_list, [1], color='blue', plot=plot, filename=filename, ymax=True)
 
 # %%
 
@@ -174,14 +194,23 @@ if __name__ == '__main__':
     colors = [
         'blue',
         'green',
-        'red'
+        'orangered'
     ]
-    plot = plt.figure(figsize=(12, 8))
+
+    plot = plt.figure(figsize=(12, 10))
 
     for filename, color in zip(filenames, colors):
         plot = perform_all(filename, color, plot)
-    plt.subplot(2, 3, 6)
-    plt.legend()
+    ax = plt.subplot(2, 3, 6)
+    handles, labels = ax.get_legend_handles_labels()
+    plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
+    # plt.legend()
+    plot_2_tiff(plot, 'measurements_real')
+
+    draw_interception()
+
+
+# %%
 
 
 # %%

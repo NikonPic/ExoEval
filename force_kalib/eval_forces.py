@@ -1,4 +1,5 @@
 # %%
+from visualize import plot_2_tiff
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
@@ -48,7 +49,7 @@ def plot_arrs(value_arrs):
     plt.legend()
 
 
-def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True):
+def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=14):
 
     plt.grid(0.25)
 
@@ -80,14 +81,16 @@ def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True):
     std_arr = np.std(value_arrs_fitted, axis=0)
 
     time = np.array(range(len(mean_arr))) / 10
-    plt.plot(time, mean_arr, label='Mean ± std of Measurements')
+    plt.plot(time, mean_arr, label='mean ± std of measurements')
     plt.fill_between(time, mean_arr + std_arr, mean_arr -
                      std_arr, facecolor='blue', interpolate=True, alpha=0.2)
     plt.plot(time, soll_arr, color='red', linestyle='-.', label='target value')
-    plt.legend(loc='lower center')
-    plt.xlabel('Time [s]')
-    plt.ylabel('Force [N]')
+    #plt.legend(loc='lower center', fontsize=ft)
+    plt.xlabel('Time [s]', fontsize=ft) if index > 0 else ''
+    plt.ylabel('Force [N]', fontsize=ft)
     plt.ylim([0, 12])
+    plt.title(f'Sensor {index+1}: Drift and hysteresis',
+              fontweight='bold', fontsize=ft)
 
     if show_poly:
         plt.subplot(2, 2, index * 2 + 2)
@@ -139,7 +142,7 @@ def define_soll_arr(arr):
 
 
 def perform_analysis(poly_deg=2, show_poly=False, longval=True):
-    plt.figure(figsize=(12, 10))
+    fig = plt.figure(figsize=(8, 10))
 
     name_mapping = {
         'blau.txt': 'DRUCK',
@@ -152,16 +155,22 @@ def perform_analysis(poly_deg=2, show_poly=False, longval=True):
             plt.subplot(2, 2, index * 2 + 1)
         else:
             plt.subplot(2, 1, index+1)
+
         print(filename)
         active_id = 5 if 'blau' in filename else 4
         time, values = read_file(filename, active_id=active_id)
         _, value_arrs = long_arr_2_arrs(time, values, 10, excludes=[0, 1])
         force_polys[name_mapping[filename]] = std_plot(value_arrs, poly_deg=poly_deg,
                                                        show_poly=show_poly, index=index, longval=longval)
+    ax = plt.subplot(2, 1, 2)
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', ncol=2, fontsize=14)
+    plot_2_tiff(fig, 'force')
+
     return force_polys
 
 
-force_polys = perform_analysis(poly_deg=3, show_poly=True)
+force_polys = perform_analysis(poly_deg=3, show_poly=False)
 
 
 # %%

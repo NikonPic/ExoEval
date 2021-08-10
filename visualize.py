@@ -1,4 +1,6 @@
 # %%
+from io import BytesIO
+from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,7 +10,7 @@ torquelab = 'Joint Torque [Nm]'
 deglab = 'Joint Angle [deg]'
 
 
-def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none'):
+def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=14):
     """plot the arrays fitted to the model"""
 
     time = fitted_data['time']
@@ -58,18 +60,18 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
     cur_color = 'blue' if color == 'none' else color
 
     plt.subplot(2, 3, 1)
-    plt.title('Angle Trajectory MCP')
+    plt.title('Angle Trajectory MCP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, phi_mcp_arr, color=cur_color)
     if stats:
         plt.fill_between(time, phi_mcp_arr + phi_mcp_arr_std, phi_mcp_arr -
                          phi_mcp_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([deg_min, deg_max])
-    plt.ylabel(deglab)
-
+    plt.ylabel(deglab, fontsize=ft)
+    
     cur_color = 'green' if color == 'none' else color
     plt.subplot(2, 3, 2)
-    plt.title('Angle Trajectory PIP')
+    plt.title('Angle Trajectory PIP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, phi_pip_arr, color=cur_color)
     if stats:
@@ -79,7 +81,7 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
 
     cur_color = 'red' if color == 'none' else color
     plt.subplot(2, 3, 3)
-    plt.title('Angle Trajectory DIP')
+    plt.title('Angle Trajectory DIP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, phi_dip_arr, color=cur_color)
     if stats:
@@ -89,41 +91,51 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
 
     cur_color = 'blue' if color == 'none' else color
     plt.subplot(2, 3, 4)
-    plt.title('Torque Trajectory MCP')
+    plt.title('Torque Trajectory MCP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, m_mcp_arr, color=cur_color)
     if stats:
         plt.fill_between(time, m_mcp_arr + m_mcp_arr_std, m_mcp_arr -
                          m_mcp_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
-    plt.ylabel(torquelab)
+    plt.xlabel(timelab, fontsize=ft)
+    plt.ylabel(torquelab, fontsize=ft)
 
     cur_color = 'green' if color == 'none' else color
     plt.subplot(2, 3, 5)
-    plt.title('Torque Trajectory PIP')
+    plt.title('Torque Trajectory PIP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, m_dip_arr, color=cur_color)
     if stats:
         plt.fill_between(time, m_dip_arr + m_dip_arr_std, m_dip_arr -
                          m_dip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
+    plt.xlabel(timelab, fontsize=ft)
 
-    if filename != 'none':
-        filename = filename.split('_')[0]
+    filename = filename_2_label(filename)
 
     cur_color = 'red' if color == 'none' else color
     plt.subplot(2, 3, 6)
-    plt.title('Torque Trajectory DIP')
+    plt.title('Torque Trajectory DIP', fontsize=ft)
     plt.grid(0.25)
     plt.plot(time, m_pip_arr, color=cur_color, label=filename)
     if stats:
         plt.fill_between(time, m_pip_arr + m_pip_arr_std, m_pip_arr -
                          m_pip_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([m_min, m_max])
-    plt.xlabel(timelab)
-    return plt
+    plt.xlabel(timelab, fontsize=ft)
+    return plot
+
+
+def filename_2_label(filename):
+    filename = filename.split('_')[0]
+    labelmap = {
+        '': '',
+        'niko': ' Length = 93mm (m)',
+        'tina': 'Length = 87 mm (f)',
+        'chrissi': 'Length = 85 mm (f)',
+    }
+    return labelmap[filename]
 
 
 def plot_data(data_list: list, index=0):
@@ -149,3 +161,20 @@ def plot_data(data_list: list, index=0):
     plt.legend()
     plt.xlabel(timelab)
     plt.ylabel('Force [N]')
+
+
+def plot_2_tiff(fig, name):
+    """
+    https://stackoverflow.com/questions/37945495/save-matplotlib-figure-as-tiff
+    """
+    # save figure
+    # (1) save the image in memory in PNG format
+    png1 = BytesIO()
+    fig.savefig(png1, format='png')
+
+    # (2) load this image into PIL
+    png2 = Image.open(png1)
+
+    # (3) save as TIFF
+    png2.save(f'./results/{name}.tiff')
+    png1.close()

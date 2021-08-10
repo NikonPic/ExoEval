@@ -50,6 +50,11 @@ def new_config_params(params: dict):
     # Aktorgelenkmountposition hinten relativ zu Gelenk B
     params['akt_x'] = -152.12
     params['akt_y'] = -21.79
+
+    # overall finger length:
+    print('Length_FINGER:', round(
+        params['l_pp'] + params['l_pm'] + params['l_pd']))
+
     return params
 
 

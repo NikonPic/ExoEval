@@ -1,10 +1,12 @@
 # %%
-from visualize import plot_2_tiff
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 import numpy.polynomial.polynomial as poly
 import os
+from visualize import plot_2_tiff
 
 
 def read_file(filename: str, active_id=5):
@@ -49,6 +51,21 @@ def plot_arrs(value_arrs):
     plt.legend()
 
 
+def print_errors(value_arrs_fitted, soll_arr):
+    errs = [abs(np.array(loc_arr) - np.array(soll_arr))
+            for loc_arr in value_arrs_fitted]
+
+    # print single tests
+    for idx, (m, std) in enumerate(zip(np.mean(errs, axis=1), np.std(errs, axis=1))):
+        print(f'Test {idx}: {round(m,2)} ± {round(std, 2)} N')
+
+    # overall tests:
+    overall = np.array(errs).flatten()
+    m_all = np.mean(overall)
+    std_all = np.std(overall)
+    print(f'Overall: {round(m_all,2)} ± {round(std_all, 2)} N')
+
+
 def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=14):
 
     plt.grid(0.25)
@@ -76,6 +93,7 @@ def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=
     print('OFFSET: ', intercept)
 
     value_arrs_fitted = [ffit(np.array(loc_arr)) for loc_arr in value_arrs]
+    print_errors(value_arrs_fitted, soll_arr)
 
     mean_arr = np.mean(value_arrs_fitted, axis=0)
     std_arr = np.std(value_arrs_fitted, axis=0)
@@ -85,7 +103,7 @@ def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=
     plt.fill_between(time, mean_arr + std_arr, mean_arr -
                      std_arr, facecolor='blue', interpolate=True, alpha=0.2)
     plt.plot(time, soll_arr, color='red', linestyle='-.', label='target value')
-    #plt.legend(loc='lower center', fontsize=ft)
+
     plt.xlabel('Time [s]', fontsize=ft) if index > 0 else ''
     plt.ylabel('Force [N]', fontsize=ft)
     plt.ylim([0, 12])

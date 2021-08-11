@@ -68,9 +68,10 @@ def apply_reference(params, ref_l8, l8_true=34):
         if type(params[loc_key]) == list:
             params[loc_key] = [params[loc_key][idx] *
                                factor for idx in range(len(params[loc_key]))]
+            print(f'{loc_key}: {params[loc_key]}')
         else:
             params[loc_key] = params[loc_key] * factor
-        print(f'{loc_key}: {params[loc_key]}')
+            print(f'{loc_key}: {round(params[loc_key])}')
 
     return params
 

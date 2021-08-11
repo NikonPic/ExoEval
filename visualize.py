@@ -68,7 +68,7 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
                          phi_mcp_arr_std, facecolor=cur_color, interpolate=True, alpha=0.2)
     plt.ylim([deg_min, deg_max])
     plt.ylabel(deglab, fontsize=ft)
-    
+
     cur_color = 'green' if color == 'none' else color
     plt.subplot(2, 3, 2)
     plt.title('Angle Trajectory PIP', fontsize=ft)

@@ -117,6 +117,51 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
     return fitted_data
 
 
+def print_data_infos(arr_fitted_data):
+    """
+    print all infos to angle and torque
+    mcp - range - min - max
+    pip - range - min - max 
+    dip - range - min - max
+
+    -> and mean ± std
+    """
+    rel_keys = list(arr_fitted_data[0].keys())
+    rel_keys.remove('time')
+
+    data_infos = {
+        key: {
+            'min': [],
+            'max': [],
+            'range': [],
+        } for key in rel_keys
+    }
+
+    for fitted_data in arr_fitted_data:
+
+        for key in rel_keys:
+            loc_arr = fitted_data[key]
+            loc_min = min(loc_arr)
+            loc_max = max(loc_arr)
+            loc_range = round(loc_max - loc_min, 2)
+
+            data_infos[key]['min'].append(loc_min)
+            data_infos[key]['max'].append(loc_max)
+            data_infos[key]['range'].append(loc_range)
+
+    # now print the overall result
+    for key in rel_keys:
+        print(key)
+        for loc_key in ['min', 'max', 'range']:
+            print(ret_m_std(data_infos[key], loc_key))
+
+
+def ret_m_std(arr, loc_key):
+    m = round(np.mean(arr[loc_key]), 2)
+    st = round(np.std(arr[loc_key]), 2)
+    return f'{loc_key}: ${m} \pm {st}$'
+
+
 def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.figure(figsize=(12, 8)), filename='none', ymax=False):
     """apply the model on the measurements acc to id list and plot the fitted arrays"""
 
@@ -138,6 +183,8 @@ def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.
                     for index in range(len(arr_fitted_data))]
         avg_arrs[f'{key}_m'] = np.mean(loc_arrs, axis=0)
         avg_arrs[f'{key}_std'] = np.std(loc_arrs, axis=0)
+
+    print_data_infos(arr_fitted_data)
 
     plot = plot_fitted_arrs(avg_arrs, stats=True,
                             color=color, plot=plot, filename=filename, buil_ymax=ymax)
@@ -201,16 +248,13 @@ if __name__ == '__main__':
 
     for filename, color in zip(filenames, colors):
         plot = perform_all(filename, color, plot)
+
     ax = plt.subplot(2, 3, 6)
     handles, labels = ax.get_legend_handles_labels()
     plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
-    # plt.legend()
     plot_2_tiff(plot, 'measurements_real')
 
     draw_interception()
-
-
-# %%
 
 
 # %%

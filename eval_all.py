@@ -253,8 +253,8 @@ if __name__ == '__main__':
     handles, labels = ax.get_legend_handles_labels()
     plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
     plot_2_tiff(plot, 'measurements_real')
+    plot.show()
 
     draw_interception()
-
 
 # %%

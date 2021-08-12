@@ -41,7 +41,7 @@ def deg_2_pos(l_pp, l_pm, l_pd, mcp, pip, dip, mult=False):
     return xtip, ytip
 
 
-def plot_br(l_pp, l_pm, l_pd, r_rel, steps=1000, color='black'):
+def plot_br(l_pp, l_pm, l_pd, r_rel, steps=1000, color='black', label=''):
     """plot the ROM depending on the measured values"""
     # allocate empty
     fs = [[], []]
@@ -84,7 +84,7 @@ def plot_br(l_pp, l_pm, l_pd, r_rel, steps=1000, color='black'):
         fs[0].append(xtip)
         fs[1].append(ytip)
 
-    plt.plot(fs[0], fs[1], color=color)
+    plt.plot(fs[0], fs[1], color=color, label=label)
 
 
 def plot_finger(l_pp, l_pm, l_pd, r_rel):
@@ -108,47 +108,57 @@ def perform_br_plot(l_pp, l_pm, l_pd, r_extra=0):
     plt.xlim([-50, 100])
     plt.grid(0.25)
     plot_finger(l_pp, l_pm, l_pd, R_all)
-    plot_br(l_pp, l_pm, l_pd, R_all)
-    plot_br(l_pp, l_pm, l_pd, R_func, color='darkred')
+    plot_br(l_pp, l_pm, l_pd, R_all, label='Overall ROM')
+    plot_br(l_pp, l_pm, l_pd, R_func, color='darkred', label='Functional ROM')
 
     if r_extra != 0:
         plot_br(l_pp, l_pm, l_pd, r_extra)
 
 
-def plot_br_fitted(l_pp, l_pm, l_pd, fd, color, filename):
+def plot_br_fitted(l_pp, l_pm, l_pd, fd, color, label=''):
     pt1 = 0.99
     mcp_arr, pip_arr, dip_arr = filt_d(fd['deg_1']), filt_d(
         fd['deg_2'], u_lim=-10, pt1=pt1), filt_d(fd['deg_3'])
 
-    r_extra = {
-        'mcp': [-min(mcp_arr), -max(mcp_arr)],
-        'pip': [-min(pip_arr), -max(pip_arr)],
-        'dip': [-min(dip_arr), -max(dip_arr)]
-    }
-
     perform_br_plot(l_pp, l_pm, l_pd, r_extra=0)
 
     fs = [[], []]
-    for (mcp, pip, dip) in zip(fd['deg_1'], fd['deg_2'], fd['deg_3']):
-        xtip, ytip = deg_2_pos(l_pp, l_pm, l_pd, mcp, pip, dip)
+    for (mcp, pip, dip) in zip(mcp_arr, pip_arr, dip_arr):
+        xtip, ytip = deg_2_pos(l_pp, l_pm, l_pd, -mcp, -pip, -dip)
         fs[0].append(xtip)
-        fs[1].append(-ytip)
-    plt.plot(fs[0], fs[1], color=color, linewidth=2)
+        fs[1].append(ytip)
+    plt.plot(fs[0], fs[1], color=color, linewidth=2, label=label)
 
 
-def filt_d(deg_arr, u_lim=30, pt1=0.95):
+def pt1_filt(deg_arr, pt1):
+    deg_old = deg_arr[0]
+
+    for i, deg in enumerate(deg_arr):
+        deg_old = pt1 * deg_old + (1-pt1) * deg
+        deg_arr[i] = deg_old
+
+    return deg_arr
+
+
+def filt_values(deg_arr, val1=0, val_high=200, val_low=-220):
     deg_old = deg_arr[0]
 
     # exclude 0s
     for i, deg in enumerate(deg_arr):
-        if deg == 0:
+        if deg == val1:
             deg_arr[i] = deg_old
-        elif deg < -220:
+        elif deg < val_low:
             deg_arr[i] = deg_old
-        elif deg > 200:
+        elif deg > val_high:
             deg_arr[i] = deg_old
         else:
             deg_old = deg
+
+    return deg_arr
+
+
+def filt_d(deg_arr, u_lim=30, pt1=0.95):
+    deg_arr = filt_values(deg_arr)
 
     for i, deg in enumerate(deg_arr):
         if deg > 30:
@@ -172,13 +182,7 @@ def filt_d(deg_arr, u_lim=30, pt1=0.95):
             deg_old = deg
         deg_arr[i] = deg
 
-    deg_old = deg_arr[0]
-
-    for i, deg in enumerate(deg_arr):
-        deg_old = pt1 * deg_old + (1-pt1) * deg
-        deg_arr[i] = deg_old
-
-    return deg_arr
+    return pt1_filt(deg_arr, pt1)
 
 
 if __name__ == '__main__':

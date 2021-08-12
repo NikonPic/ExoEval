@@ -5,18 +5,30 @@ from matplotlib import pyplot as plt
 
 
 # %%
+def perform_overlall_rom(ft=16):
+    xlab = 'Distance fingertip to MCP joint in x-direction [mm]'
+    ylab = 'Distance fingertip to MCP joint in y-direction [mm]'
+    fig = plt.figure(figsize=(24, 8))
 
-fig = plt.figure(figsize=(24, 8))
-plt.subplot(131)
-plt.ylabel('Distance fingertip to MCP joint in y-direction [mm]')
-draw_all_roms('niko_rom.txt', 1, color='blue')
-plt.xlabel('Distance fingertip to MCP joint in x-direction [mm]')
-plt.subplot(132)
-plt.xlabel('Distance fingertip to MCP joint in x-direction [mm]')
-draw_all_roms('tina_rom.txt', 0, color='green')
-plt.subplot(133)
-plt.xlabel('Distance fingertip to MCP joint in x-direction [mm]')
-draw_all_roms('chrissi_rom.txt', 1, color='orangered')
+    plt.subplot(131)
+    plt.title('ROM Finger 1')
+    plt.ylabel(ylab, fontsize=ft)
+    draw_all_roms('niko_rom.txt', 1, color='blue')
+    plt.xlabel(xlab, fontsize=ft)
+
+    plt.subplot(132)
+    plt.title('ROM Finger 2')
+    plt.xlabel(xlab, fontsize=ft)
+    draw_all_roms('tina_rom.txt', 0, color='green')
+
+    plt.subplot(1, 3, 3)
+    plt.title('ROM Finger 3')
+    plt.plot([0, 0], [0.1, 0.1], color='black', label='Overall ROM')
+    plt.xlabel(xlab, fontsize=ft)
+    draw_all_roms('chrissi_rom.txt', 1, color='orangered')
+
+
+perform_overlall_rom()
 # %%
 
 if __name__ == '__main__':
@@ -45,6 +57,8 @@ if __name__ == '__main__':
     plot.show()
 
     draw_interception()
+
+    perform_overlall_rom()
 
 # %%
 draw_interception(idxs=[14])

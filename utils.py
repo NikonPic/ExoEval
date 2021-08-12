@@ -283,4 +283,12 @@ def draw_all_roms(filename, index, color):
     fitted_data = perform_model_analysis(
         model, data_list, index, true_data=False, plotit=False, ymax=True)
 
-    plot_br_fitted(l_pp, l_pm, l_pd, fitted_data, color, filename)
+    labelmap = {
+        '': '',
+        'niko': 'Finger 1',
+        'tina': 'Finger 2',
+        'chrissi': 'Finger 3',
+        'none': 'none',
+    }
+    label = labelmap[filename.split('_')[0]]
+    plot_br_fitted(l_pp, l_pm, l_pd, fitted_data, color, label)

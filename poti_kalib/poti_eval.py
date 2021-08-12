@@ -43,6 +43,12 @@ def fit_poti(grad_arr, poti_arr, poly_deg=3, offset=0):
     return ffit
 
 
+def provide_offsets_infos(poti_polys):
+    print(poti_polys['B'](3740) - 90)
+    print(poti_polys['A'](2817) - 90)
+    print(poti_polys['B'](2260) - 0)
+
+
 # %%
 poti_polys = {}
 plt.figure(figsize=(8, 12))
@@ -51,13 +57,5 @@ poti_polys['B'] = fit_poti(grad, b_arr, offset=-99.719)
 plt.subplot(3, 1, 2)
 poti_polys['A'] = fit_poti(grad, a_arr, offset=-48.569)
 plt.subplot(3, 1, 3)
-poti_polys['K'] = fit_poti(grad, k_arr, offset=-16)  # -16 original! # force: -36
-# %%
-#poti_polys['K'](2257) - 90
-# %%
-poti_polys['B'](3740) - 90
-# %%
-poti_polys['A'](2817) - 90
-# %%
-poti_polys['B'](2260) - 0
+poti_polys['K'] = fit_poti(grad, k_arr, offset=-16)
 # %%

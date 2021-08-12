@@ -35,6 +35,7 @@ def fit_poti(grad_arr, poti_arr, poly_deg=3, offset=0):
     # apply offset:
     coefficients[0] += offset
     ffit = poly.Polynomial(coefficients)
+    print('Coefficients: ', coefficients)
 
     coefficients_lin = poly.polyfit(poti_arr, grad_arr, 1)
     print('Coefficients: ', coefficients_lin)
@@ -50,7 +51,7 @@ poti_polys['B'] = fit_poti(grad, b_arr, offset=-99.719)
 plt.subplot(3, 1, 2)
 poti_polys['A'] = fit_poti(grad, a_arr, offset=-48.569)
 plt.subplot(3, 1, 3)
-poti_polys['K'] = fit_poti(grad, k_arr, offset=-36)  # -16 original!
+poti_polys['K'] = fit_poti(grad, k_arr, offset=-16)  # -16 original! # force: -36
 # %%
 #poti_polys['K'](2257) - 90
 # %%

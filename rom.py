@@ -99,8 +99,8 @@ def plot_finger(l_pp, l_pm, l_pd, r_rel):
     x_arr = [0, xpip, xdip, xtip]
     y_arr = [0, ypip, ydip, ytip]
 
-    plt.plot(x_arr, y_arr, color='black')
-    plt.scatter(x_arr, y_arr, color='black')
+    plt.plot(x_arr, y_arr, color='black', label='_Hidden')
+    plt.scatter(x_arr, y_arr, color='black', label='_Hidden')
 
 
 def perform_br_plot(l_pp, l_pm, l_pd, r_extra=0):
@@ -167,8 +167,8 @@ def filt_d(deg_arr, u_lim=30, pt1=0.95):
             deg = deg - 180
         if deg < -220:
             deg = deg + 180
-        if deg < -140:
-            deg = -140
+        if deg < -130:
+            deg = -130
 
         deg_arr[i] = deg
 

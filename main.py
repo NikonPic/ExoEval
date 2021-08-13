@@ -5,30 +5,37 @@ from matplotlib import pyplot as plt
 
 
 # %%
-def perform_overlall_rom(ft=16):
+def perform_overlall_rom(ft=18):
     xlab = 'Distance fingertip to MCP joint in x-direction [mm]'
     ylab = 'Distance fingertip to MCP joint in y-direction [mm]'
     fig = plt.figure(figsize=(24, 8))
 
     plt.subplot(131)
-    plt.title('ROM Finger 1')
+    plt.title('ROM Finger 1', fontsize=ft)
     plt.ylabel(ylab, fontsize=ft)
     draw_all_roms('niko_rom.txt', 1, color='blue')
     plt.xlabel(xlab, fontsize=ft)
+    plt.plot([0, 0.1], [0, 0.1], color='green', label='Exo Finger 2 ROM')
+    plt.plot([0, 0.1], [0, 0.1], color='orangered', label='Exo Finger 3 ROM')
 
     plt.subplot(132)
-    plt.title('ROM Finger 2')
+    plt.title('ROM Finger 2', fontsize=ft)
     plt.xlabel(xlab, fontsize=ft)
-    draw_all_roms('tina_rom.txt', 0, color='green')
+    draw_all_roms('tina_rom.txt', 1, color='green')
 
     plt.subplot(1, 3, 3)
-    plt.title('ROM Finger 3')
+    plt.title('ROM Finger 3', fontsize=ft)
     plt.plot([0, 0], [0.1, 0.1], color='black', label='Overall ROM')
     plt.xlabel(xlab, fontsize=ft)
     draw_all_roms('chrissi_rom.txt', 1, color='orangered')
 
+    ax = plt.subplot(1, 3, 1)
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', ncol=5, fontsize=ft)
 
-perform_overlall_rom()
+    plot_2_tiff(fig, 'ROM_plot')
+
+
 # %%
 
 if __name__ == '__main__':
@@ -62,8 +69,4 @@ if __name__ == '__main__':
 
 # %%
 draw_interception(idxs=[14])
-# %%
-plt.figure(figsize=(12, 10))
-draw_all_roms('tina_rom.txt', 1, color='green')
-
 # %%

@@ -247,11 +247,11 @@ def draw_interception(idxs=[1]):
 
     for ind in range(1, 7):
         plt.subplot(2, 3, ind)
-        plt.vlines(4.9, -70, 30, linestyles='-.', linewidth=1, color='black')
-        plt.vlines(6, -70, 30, linestyles='-.', linewidth=1, color='black')
+        plt.vlines(10, -70, 30, linestyles='-.', linewidth=1, color='black')
+        plt.vlines(23, -70, 30, linestyles='-.', linewidth=1, color='black')
 
-        plt.vlines(18, -70, 30, linestyles='-.', linewidth=1, color='black')
-        plt.vlines(20, -70, 30, linestyles='-.', linewidth=1, color='black')
+        #plt.vlines(18, -70, 30, linestyles='-.', linewidth=1, color='black')
+        #plt.vlines(20, -70, 30, linestyles='-.', linewidth=1, color='black')
 
     all_polys = concat_polys(poti_polys, force_polys)
     all_data = lines2data(lines, all_polys)
@@ -285,9 +285,9 @@ def draw_all_roms(filename, index, color):
 
     labelmap = {
         '': '',
-        'niko': 'Finger 1',
-        'tina': 'Finger 2',
-        'chrissi': 'Finger 3',
+        'niko': 'Exo Finger 1 ROM',
+        'tina': 'Exo Finger 2 ROM',
+        'chrissi': 'Exo Finger 3 ROM',
         'none': 'none',
     }
     label = labelmap[filename.split('_')[0]]

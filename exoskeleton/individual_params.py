@@ -90,8 +90,8 @@ def niko_params():
     # Abstand Verbindungsstecke zwischen Fingergelenken zu Oberseite der Fingerglieder
     params['h_ap'] = 0  # we use the whole at once
     params['h_pp'] = 42.53
-    params['h_pm'] = 37.71
-    params['h_pd'] = 28.27
+    params['h_pm'] = 27.71
+    params['h_pd'] = 48.27
 
     params['d_gen'] = 33.99
 
@@ -122,7 +122,7 @@ def tina_params():
     # Abstand Verbindungsstecke zwischen Fingergelenken zu Oberseite der Fingerglieder
     params['h_ap'] = 0  # we use the whole at once
     params['h_pp'] = 26.37
-    params['h_pm'] = 26.33
+    params['h_pm'] = 22.33
     params['h_pd'] = 22.79
 
     params['d_gen'] = 31.72

@@ -10,7 +10,7 @@ torquelab = 'Joint Torque [Nm]'
 deglab = 'Joint Angle [deg]'
 
 
-def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=14):
+def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=16):
     """plot the arrays fitted to the model"""
 
     time = fitted_data['time']
@@ -131,9 +131,9 @@ def filename_2_label(filename):
     filename = filename.split('_')[0]
     labelmap = {
         '': '',
-        'niko': 'Finger 1',
-        'tina': 'Finger 2',
-        'chrissi': 'Finger 3',
+        'niko': 'Subject 1',
+        'tina': 'Subject 2',
+        'chrissi': 'Subject 3',
         'none': 'none',
     }
     return labelmap[filename]
@@ -177,5 +177,5 @@ def plot_2_tiff(fig, name):
     png2 = Image.open(png1)
 
     # (3) save as TIFF
-    png2.save(f'./results/{name}.tiff')
+    png2.save(f'./results/{name}.tiff', bbox_inches='tight', pad_inches = 0)
     png1.close()

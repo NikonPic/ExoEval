@@ -283,11 +283,12 @@ def draw_all_roms(filename, index, color):
     fitted_data = perform_model_analysis(
         model, data_list, index, true_data=False, plotit=False, ymax=True)
 
+    lab = 'Exoskeleton ROM'
     labelmap = {
         '': '',
-        'niko': 'Exo Finger 1 ROM',
-        'tina': 'Exo Finger 2 ROM',
-        'chrissi': 'Exo Finger 3 ROM',
+        'niko': lab,
+        'tina': lab,
+        'chrissi': lab,
         'none': 'none',
     }
     label = labelmap[filename.split('_')[0]]

@@ -1,19 +1,3 @@
-# TODO: Paramterer über Abbildung 5.2 bestimmen
-# l_G1
-# l_pp
-# l_pm
-# l_pd
-
-# h_pd
-# h_pd
-# h_pp
-
-# h_ap -> neu je nach glied
-
-# TODO: Abbildung 5.9
-# P12X etc.
-# TODO: h_ap = 5.5
-
 from exoskeleton.exo_workflow import KinExoParams
 
 

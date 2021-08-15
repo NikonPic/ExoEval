@@ -52,8 +52,11 @@ def plot_arrs(value_arrs):
 
 
 def print_errors(value_arrs_fitted, soll_arr):
+
     errs = [abs(np.array(loc_arr) - np.array(soll_arr))
             for loc_arr in value_arrs_fitted]
+
+    rmse_errs = [np.sqrt(np.mean(np.square(err))) for err in errs]
 
     # print single tests
     for idx, (m, std) in enumerate(zip(np.mean(errs, axis=1), np.std(errs, axis=1))):
@@ -64,6 +67,10 @@ def print_errors(value_arrs_fitted, soll_arr):
     m_all = np.mean(overall)
     std_all = np.std(overall)
     print(f'Overall: {round(m_all,2)} ± {round(std_all, 2)} N')
+
+    m_all_rmse = np.mean(rmse_errs)
+    std_all_rmse = np.std(rmse_errs)
+    print(f'Overall RMSE: {round(m_all,2)} ± {round(std_all, 2)} N')
 
 
 def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=14):
@@ -107,7 +114,8 @@ def std_plot(value_arrs, poly_deg=2, show_poly=False, index=0, longval=True, ft=
     plt.xlabel('Time [s]', fontsize=ft) if index > 0 else ''
     plt.ylabel('Force [N]', fontsize=ft)
     plt.ylim([0, 12])
-    plt.title(f'Sensor {index+1}: Drift and hysteresis',
+    tlab = 'Compression' if index == 0 else 'Tension'
+    plt.title(f'{tlab} sensor: drift and hysteresis',
               fontweight='bold', fontsize=ft)
 
     if show_poly:

@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import pi
+from shapely.geometry import Polygon
 
 fac_dip = 2 / 3
 
@@ -86,6 +87,16 @@ def plot_br(l_pp, l_pm, l_pd, r_rel, steps=1000, color='black', label=''):
 
     plt.plot(fs[0], fs[1], color=color, label=label)
 
+    return fs_2_poly(fs)
+
+
+def fs_2_poly(fs):
+    poly_arr = []
+    for x, y in zip(fs[0], fs[1]):
+        poly_arr.append([x, y])
+    poly = Polygon(poly_arr)
+    return poly.buffer(0)
+
 
 def plot_finger(l_pp, l_pm, l_pd, r_rel):
     """draw the finger in the starting position"""
@@ -108,11 +119,14 @@ def perform_br_plot(l_pp, l_pm, l_pd, r_extra=0):
     plt.xlim([-50, 100])
     plt.grid(0.25)
     plot_finger(l_pp, l_pm, l_pd, R_all)
-    plot_br(l_pp, l_pm, l_pd, R_all, label='Overall ROM')
-    plot_br(l_pp, l_pm, l_pd, R_func, color='darkred', label='Functional ROM')
+    poly_all = plot_br(l_pp, l_pm, l_pd, R_all, label='Overall ROM')
+    poly_func = plot_br(l_pp, l_pm, l_pd, R_func,
+                        color='darkred', label='Functional ROM')
 
     if r_extra != 0:
         plot_br(l_pp, l_pm, l_pd, r_extra)
+
+    return poly_all, poly_func
 
 
 def plot_br_fitted(l_pp, l_pm, l_pd, fd, color, label=''):
@@ -120,7 +134,7 @@ def plot_br_fitted(l_pp, l_pm, l_pd, fd, color, label=''):
     mcp_arr, pip_arr, dip_arr = filt_d(fd['deg_1']), filt_d(
         fd['deg_2'], u_lim=-10, pt1=pt1), filt_d(fd['deg_3'])
 
-    perform_br_plot(l_pp, l_pm, l_pd, r_extra=0)
+    poly_all, poly_func = perform_br_plot(l_pp, l_pm, l_pd, r_extra=0)
 
     fs = [[], []]
     for (mcp, pip, dip) in zip(mcp_arr, pip_arr, dip_arr):
@@ -128,6 +142,19 @@ def plot_br_fitted(l_pp, l_pm, l_pd, fd, color, label=''):
         fs[0].append(xtip)
         fs[1].append(ytip)
     plt.plot(fs[0], fs[1], color=color, linewidth=2, label=label)
+
+    poly_exo = fs_2_poly(fs)
+    plot_inter_infos(poly_all, poly_func, poly_exo)
+
+
+def plot_inter_infos(poly_all: Polygon, poly_func: Polygon, poly_exo: Polygon):
+    print('Overall ROM: ', round(poly_all.intersection(
+        poly_exo).area / poly_all.area, 2), ' %')
+    print('Functional ROM: ', round(poly_func.intersection(
+        poly_exo).area / poly_func.area, 2), ' %')
+    print('Area Overall: ', round(poly_all.area, 2))
+    print('Area Func: ', round(poly_func.area, 2))
+    print('Area Exo: ', round(poly_exo.area, 2))
 
 
 def pt1_filt(deg_arr, pt1):

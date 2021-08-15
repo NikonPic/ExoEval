@@ -82,7 +82,11 @@ if __name__ == '__main__':
     perform_overlall_rom()
 
 # %%
-draw_interception(idxs=[14])
+draw_interception(filename='niko_mit_inter (2).txt', idxs=[15])
+for ind in range(1, 7):
+    plt.subplot(2, 3, ind)
+    plt.vlines(10, -70, 30, linestyles='-.', linewidth=1, color='black')
+    plt.vlines(23, -70, 30, linestyles='-.', linewidth=1, color='black')
 # %%
 
 # %%

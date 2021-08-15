@@ -134,7 +134,7 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
             m_pip_arr[index] = m_pip
             m_dip_arr[index] = m_dip
         except:
-            print('error occured')
+            print('Kinematic error')
 
     fitted_data = {
         'time': time,
@@ -240,18 +240,9 @@ def perform_all(filename, color, plot):
     return plot
 
 
-def draw_interception(idxs=[1]):
-    filename = 'niko_mit_inter (2).txt'
+def draw_interception(filename='niko_mit_inter (2).txt', idxs=[1]):
     lines = filename_2_lines(filename)
     plot = plt.figure(figsize=(12, 10))
-
-    for ind in range(1, 7):
-        plt.subplot(2, 3, ind)
-        plt.vlines(10, -70, 30, linestyles='-.', linewidth=1, color='black')
-        plt.vlines(23, -70, 30, linestyles='-.', linewidth=1, color='black')
-
-        #plt.vlines(18, -70, 30, linestyles='-.', linewidth=1, color='black')
-        #plt.vlines(20, -70, 30, linestyles='-.', linewidth=1, color='black')
 
     all_polys = concat_polys(poti_polys, force_polys)
     all_data = lines2data(lines, all_polys)

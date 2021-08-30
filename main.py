@@ -7,6 +7,30 @@ import numpy as np
 
 
 # %%
+def perform_subject_study():
+    filenames = [
+        'niko_ohne_inter.txt',
+        'tina_ohne_inter.txt',
+        'chrissi_ohne_inter.txt'
+    ]
+
+    colors = [
+        'blue',
+        'green',
+        'orangered'
+    ]
+
+    plot = plt.figure(figsize=(12, 10))
+
+    for filename, color in zip(filenames, colors):
+        plot = perform_all(filename, color, plot)
+
+    ax = plt.subplot(2, 3, 6)
+    handles, labels = ax.get_legend_handles_labels()
+    plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
+    plot_2_tiff(plot, 'measurements_real')
+
+
 def perform_overlall_rom(ft=18, vertical=True):
     xlab = 'Distance fingertip to MCP joint in x-direction [mm]'
     ylab = 'Distance fingertip to MCP joint in y-direction [mm]'
@@ -49,55 +73,29 @@ def perform_overlall_rom(ft=18, vertical=True):
     img.save(f'./results/ROM_plot.tiff', bbox_inches='tight', pad_inches=0)
 
 
-perform_overlall_rom(vertical=True)
-# %%
-
-if __name__ == '__main__':
-
-    filenames = [
-        'niko_ohne_inter.txt',
-        'tina_ohne_inter.txt',
-        'chrissi_ohne_inter.txt'
-    ]
-
-    colors = [
-        'blue',
-        'green',
-        'orangered'
-    ]
-
-    plot = plt.figure(figsize=(12, 10))
-
-    for filename, color in zip(filenames, colors):
-        plot = perform_all(filename, color, plot)
-
+def perform_intercetion_analysis():
+    """perform the intercetion analysis for subject 3"""
+    deglim = [-80, 20]
+    mlim = [-0.15, 0.1]
+    plot = draw_interception(filename='niko_inter.txt', idxs=[14, 15, 16])
+    for ind in range(1, 7):
+        plt.subplot(2, 3, ind)
+        plt.ylim(deglim)
+        if ind > 3:
+            plt.ylim(mlim)
+        plt.vlines(7, -100, 30, linestyles='-.', linewidth=1, color='black')
+        plt.vlines(22, -100, 30, linestyles='-.', linewidth=1, color='black')
     ax = plt.subplot(2, 3, 6)
     handles, labels = ax.get_legend_handles_labels()
-    plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
-    plot_2_tiff(plot, 'measurements_real')
-    plot.show()
+    plot.legend(handles, labels, loc='upper center', ncol=1, fontsize=14)
+    plot_2_tiff(plot, 'interception')
 
-    draw_interception()
+# %%
 
+
+if __name__ == '__main__':
+    perform_subject_study()
     perform_overlall_rom()
+    perform_intercetion_analysis()
 
 # %%
-plot = plt.figure(figsize=(12, 10))
-deglim = [-80, 20]
-mlim = [-0.15, 0.1]
-plot = draw_interception(filename='niko_inter_many.txt', idxs=[14, 15, 16])
-for ind in range(1, 7):
-    plt.subplot(2, 3, ind)
-    plt.ylim(deglim)
-    if ind > 3:
-        plt.ylim(mlim)
-    plt.vlines(7, -100, 30, linestyles='-.', linewidth=1, color='black')
-    plt.vlines(22, -100, 30, linestyles='-.', linewidth=1, color='black')
-ax = plt.subplot(2, 3, 6)
-handles, labels = ax.get_legend_handles_labels()
-plot.legend(handles, labels, loc='upper center', ncol=1, fontsize=14)
-plot_2_tiff(plot, 'interception')
-# %%
-
-# %%
-arr = [142, 145, 145, 161, 149, 170, 160]

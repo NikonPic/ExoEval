@@ -118,6 +118,7 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
     m_mcp_arr = np.zeros(len(data))
     m_pip_arr = np.zeros(len(data))
     m_dip_arr = np.zeros(len(data))
+    m_akt_arr = np.zeros(len(data))
 
     for index in range(len(data)):
         ele = data.iloc[index]
@@ -133,8 +134,9 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
             m_mcp_arr[index] = m_mcp
             m_pip_arr[index] = m_pip
             m_dip_arr[index] = m_dip
+            m_akt_arr[index] = model.m_b_nm
         except:
-            print('Kinematic error')
+            pass
 
     fitted_data = {
         'time': time,
@@ -144,6 +146,7 @@ def perform_model_analysis(model, data_list: list, index: int, true_data=False, 
         'm_1': m_mcp_arr,
         'm_2': m_pip_arr,
         'm_3': m_dip_arr,
+        'm_akt': m_akt_arr,
     }
 
     if plotit:
@@ -241,6 +244,7 @@ def perform_all(filename, color, plot):
 
 
 def draw_interception(filename='niko_mit_inter (2).txt', idxs=[1]):
+    """take a file and perform analysis"""
     lines = filename_2_lines(filename)
     plot = plt.figure(figsize=(12, 10))
 
@@ -254,12 +258,14 @@ def draw_interception(filename='niko_mit_inter (2).txt', idxs=[1]):
 
 
 def filename_2_lines(filename):
+    """read a file by lines"""
     with open(f'{PATH}/{filename}') as f:
         lines = f.readlines()
     return lines
 
 
 def draw_all_roms(filename, index, color):
+    """perform the Range of Motion (ROM) plots for all subjects"""
     lines = filename_2_lines(filename)
     all_polys = concat_polys(poti_polys, force_polys)
     all_data = lines2data(lines, all_polys)

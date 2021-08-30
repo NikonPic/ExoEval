@@ -10,7 +10,7 @@ torquelab = 'Joint Torque [Nm]'
 deglab = 'Joint Angle [deg]'
 
 
-def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=16):
+def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=16, use_m_akt=True):
     """plot the arrays fitted to the model"""
 
     time = fitted_data['time']
@@ -32,6 +32,9 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
         m_pip_arr_std = fitted_data['m_2_std']
         m_dip_arr_std = fitted_data['m_3_std']
 
+        m_akt_arr = fitted_data['m_akt_m']
+        m_akt_arr_std = fitted_data['m_akt_std']
+
     else:
         phi_mcp_arr = fitted_data['deg_1']
         phi_pip_arr = fitted_data['deg_2']
@@ -40,6 +43,8 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
         m_mcp_arr = fitted_data['m_1']
         m_pip_arr = fitted_data['m_2']
         m_dip_arr = fitted_data['m_3']
+
+        m_akt_arr = fitted_data['m_akt']
 
     if buil_ymax:
         deg_max = max(max(phi_pip_arr), max(
@@ -56,6 +61,12 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
 
         m_min = -0.15
         m_max = 0.10
+
+    if use_m_akt:
+        plt.figure()
+        plt.plot(m_akt_arr)
+        plt.savefig('./results/m_akt.png')
+        plot = plt.figure(figsize=(12, 8))
 
     cur_color = 'blue' if color == 'none' else color
 
@@ -177,5 +188,5 @@ def plot_2_tiff(fig, name):
     png2 = Image.open(png1)
 
     # (3) save as TIFF
-    png2.save(f'./results/{name}.tiff', bbox_inches='tight', pad_inches = 0)
+    png2.save(f'./results/{name}.tiff', bbox_inches='tight', pad_inches=0)
     png1.close()

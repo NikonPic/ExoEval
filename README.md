@@ -25,6 +25,8 @@
     |
     ├── results                          # Contains the final results
     |
+    ├── videos                           # Contains the videos of the measurements
+    |
     ├── utils.py                         # Utilities to load correct model and calibration
     ├── visualize.py                     # Contains long plot functions
     ├── rom.py                           # Range of Motion Analysis

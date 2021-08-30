@@ -94,8 +94,8 @@ def perform_intercetion_analysis():
 
 
 if __name__ == '__main__':
-    perform_subject_study()
     perform_overlall_rom()
     perform_intercetion_analysis()
+    perform_subject_study()
 
 # %%

@@ -10,7 +10,7 @@ torquelab = 'Joint Torque [Nm]'
 deglab = 'Joint Angle [deg]'
 
 
-def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=16, use_m_akt=True):
+def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.figure(figsize=(12, 8)), color='none', filename='none', ft=16, use_m_akt=False):
     """plot the arrays fitted to the model"""
 
     time = fitted_data['time']

@@ -250,6 +250,7 @@ def draw_interception(filename='niko_mit_inter (2).txt', idxs=[1]):
     model = get_model_by_filename(filename)
     plot = build_average_fitted_data(
         model, data_list, idxs, color='blue', plot=plot, filename=filename, ymax=True)
+    return plot
 
 
 def filename_2_lines(filename):

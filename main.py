@@ -82,11 +82,22 @@ if __name__ == '__main__':
     perform_overlall_rom()
 
 # %%
-draw_interception(filename='niko_mit_inter (2).txt', idxs=[15])
+plot = plt.figure(figsize=(12, 10))
+deglim = [-80, 20]
+mlim = [-0.15, 0.1]
+plot = draw_interception(filename='niko_inter_many.txt', idxs=[14, 15, 16])
 for ind in range(1, 7):
     plt.subplot(2, 3, ind)
-    plt.vlines(10, -70, 30, linestyles='-.', linewidth=1, color='black')
-    plt.vlines(23, -70, 30, linestyles='-.', linewidth=1, color='black')
+    plt.ylim(deglim)
+    if ind > 3:
+        plt.ylim(mlim)
+    plt.vlines(7, -100, 30, linestyles='-.', linewidth=1, color='black')
+    plt.vlines(22, -100, 30, linestyles='-.', linewidth=1, color='black')
+ax = plt.subplot(2, 3, 6)
+handles, labels = ax.get_legend_handles_labels()
+plot.legend(handles, labels, loc='upper center', ncol=1, fontsize=14)
+plot_2_tiff(plot, 'interception')
 # %%
 
 # %%
+arr = [142, 145, 145, 161, 149, 170, 160]

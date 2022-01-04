@@ -59,8 +59,8 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
         deg_min = -80
         deg_max = 20
 
-        m_min = -0.15
-        m_max = 0.10
+        m_min = -0.3
+        m_max = 0.2
 
     if use_m_akt:
         plt.figure()
@@ -139,13 +139,16 @@ def plot_fitted_arrs(fitted_data: dict, stats=False, buil_ymax=False, plot=plt.f
 
 
 def filename_2_label(filename):
-    filename = filename.split('_')[0]
+    filename = filename.split('_')[0].split('/')[0]
+
     labelmap = {
         '': '',
         'niko': 'Subject 1',
         'tina': 'Subject 2',
         'chrissi': 'Subject 3',
         'none': 'none',
+        'pat2': 'Patient 1',
+        'pat4': 'Patient 2',
     }
     return labelmap[filename]
 

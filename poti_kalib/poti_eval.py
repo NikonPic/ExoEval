@@ -49,13 +49,24 @@ def provide_offsets_infos(poti_polys):
     print(poti_polys['B'](2260) - 0)
 
 
+mode = 1
 # %%
-poti_polys = {}
-plt.figure(figsize=(8, 12))
-plt.subplot(3, 1, 1)
-poti_polys['B'] = fit_poti(grad, b_arr, offset=(-99.719 + 0))
-plt.subplot(3, 1, 2)
-poti_polys['A'] = fit_poti(grad, a_arr, offset=(-48.569 + 0))
-plt.subplot(3, 1, 3)
-poti_polys['K'] = fit_poti(grad, k_arr, offset=(-16))
+if mode == 0:
+    poti_polys = {}
+    plt.figure(figsize=(8, 12))
+    plt.subplot(3, 1, 1)
+    poti_polys['B'] = fit_poti(grad, b_arr, offset=(-99.719 + 0))
+    plt.subplot(3, 1, 2)
+    poti_polys['A'] = fit_poti(grad, a_arr, offset=(-48.569 + 0))
+    plt.subplot(3, 1, 3)
+    poti_polys['K'] = fit_poti(grad, k_arr, offset=(-16))
 # %%
+else:
+    poti_polys = {}
+    plt.figure(figsize=(8, 12))
+    plt.subplot(3, 1, 1)
+    poti_polys['B'] = fit_poti(grad, b_arr, offset=(-20 + 0))
+    plt.subplot(3, 1, 2)
+    poti_polys['A'] = fit_poti(grad, a_arr, offset=(-35 + 0))
+    plt.subplot(3, 1, 3)
+    poti_polys['K'] = fit_poti(grad, k_arr, offset=(-16))

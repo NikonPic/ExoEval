@@ -1,3 +1,5 @@
+# %%
+from scipy import signal
 from rom import perform_br_plot, plot_br_fitted
 from visualize import plot_data, plot_fitted_arrs
 from force_kalib.eval_forces import force_polys
@@ -99,6 +101,82 @@ def all_data_2_list(all_data):
         for key in all_data.keys():
             loc_dict[key].append(all_data[key][index])
         prev_ms = ms
+    return data_list
+
+
+def get_mindiff(arr):
+    """get the minimum difference between two values"""
+    if len(arr) > 4:
+        arr = arr[:4]
+    diffs = np.diff(arr[1:])
+    #diffs = list(diffs)
+    # diffs.remove(np.min(diffs))
+    return np.min(diffs)
+
+
+def all_data_2_list_synchro(all_data, refill=1):
+    """split th dictionary into multipl dictionary, by synchronising the start-time"""
+    data_list = []
+
+    # set start-time to 0
+    loc_dict = {
+        ele: [] for ele in all_data.keys()
+    }
+    ms0 = all_data['ms'][0]
+    ms_add = 0
+    ms_prev = 0
+
+    for index, ms in enumerate(all_data['ms']):
+        # avoid time jumps
+        if ms_prev > ms:
+            ms_add += ms_prev - ms
+
+        # create new dict and save old if this happens
+        for key in all_data.keys():
+            if key == 'ms':
+                loc_dict[key].append(ms - ms0 + ms_add)
+            else:
+                loc_dict[key].append(all_data[key][index])
+        ms_prev = ms
+
+    if refill:
+        # fill the rest of the data
+        for key in all_data.keys():
+            if key == 'ms':
+                loc_dict[key] = signal.resample(
+                    loc_dict[key], int(len(loc_dict[key])*2)) * 2
+            else:
+                loc_dict[key] = signal.resample(
+                    loc_dict[key], int(len(loc_dict[key])*2))
+
+    # synchronise the arrays using the angleB
+    if refill:
+        b, a = signal.butter(5, 0.01, btype='lowpass')
+    else:
+        b, a = signal.butter(5, 0.005, btype='lowpass')
+
+    bfilt = np.array(signal.filtfilt(b, a, loc_dict['B']))
+    minbs = signal.argrelextrema(bfilt, np.greater)[0]
+    indexdiff = get_mindiff(minbs)
+    indexdiff = indexdiff + 140 if refill else indexdiff
+
+    # now rebuilt the single ararys:
+    for cur_min in minbs[:-1]:
+        # create new dict
+        loc_dict_sync = {
+            ele: [] for ele in all_data.keys()
+        }
+        cur_min0 = loc_dict['ms'][cur_min]
+        # copy the values until maxindex
+        for index in range(indexdiff):
+            for key in all_data.keys():
+                if key == 'ms':
+                    loc_dict_sync[key].append(
+                        loc_dict[key][cur_min + index] - cur_min0)
+                else:
+                    loc_dict_sync[key].append(loc_dict[key][cur_min + index])
+        data_list.append(loc_dict_sync)
+
     return data_list
 
 
@@ -243,6 +321,25 @@ def perform_all(filename, color, plot):
     return plot
 
 
+def perform_all_patients(filename, color, plot):
+    """perform the data analysis"""
+    with open(f'./patienten/{filename}') as f:
+        lines = f.readlines()
+    lines = lines[1:len(lines)-1]
+
+    all_polys = concat_polys(poti_polys, force_polys)
+    all_data = lines2data(lines, all_polys)
+
+    if 'pat4' in filename:
+        data_list = all_data_2_list_synchro(all_data, refill=1)
+    else:
+        data_list = all_data_2_list_synchro(all_data, refill=0)
+    model = get_model_by_filename(filename)
+    plot = build_average_fitted_data(
+        model, data_list, [2, 3], color=color, plot=plot, filename=filename)
+    return plot
+
+
 def draw_interception(filename='niko_mit_inter (2).txt', idxs=[1]):
     """take a file and perform analysis"""
     lines = filename_2_lines(filename)
@@ -291,3 +388,32 @@ def draw_all_roms(filename, index, color):
     }
     label = labelmap[filename.split('_')[0]]
     plot_br_fitted(l_pp, l_pm, l_pd, fitted_data, color, label)
+
+
+# %%
+if __name__ == '__main__':
+
+    filename = 'pat4/Messung_12.txt'
+    with open(f'./patienten/{filename}') as f:
+        lines = f.readlines()
+    lines = lines[1:len(lines)-1]
+    all_polys = concat_polys(poti_polys, force_polys)
+    all_data = lines2data(lines, all_polys)
+    b, a = signal.butter(5, 0.005, btype='lowpass')
+    bfilt = np.array(signal.filtfilt(b, a, all_data['B']))
+    minbs = signal.argrelextrema(bfilt, np.less)[0]
+    zugd = all_data['ZUG'][minbs[0]:]
+    zugd = signal.resample(zugd, int(len(zugd)*2))
+    plt.plot(zugd)
+
+    filename = 'pat2/Messung_21.txt'
+    with open(f'./patienten/{filename}') as f:
+        lines = f.readlines()
+    lines = lines[1:len(lines)-1]
+    all_polys = concat_polys(poti_polys, force_polys)
+    all_data = lines2data(lines, all_polys)
+    b, a = signal.butter(5, 0.005, btype='lowpass')
+    bfilt = np.array(signal.filtfilt(b, a, all_data['B']))
+    minbs = signal.argrelextrema(bfilt, np.less)[0]
+    plt.plot(all_data['ZUG'][minbs[0]:])
+# %%

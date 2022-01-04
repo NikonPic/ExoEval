@@ -20,6 +20,12 @@ def get_params_by_name(filename: str):
 
     if 'chrissi' in filename:
         return chrissi_params()
+    
+    if 'pat2' in filename:
+        return niko_params()
+    
+    if 'pat4' in filename:
+        return tina_params()
 
     return mech_finger_params()
 

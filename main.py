@@ -1,6 +1,6 @@
 # %%
 from visualize import plot_2_tiff
-from utils import draw_all_roms, draw_interception, perform_all
+from utils import draw_all_roms, draw_interception, perform_all, perform_all_patients
 from matplotlib import pyplot as plt
 from PIL import Image
 import numpy as np
@@ -29,6 +29,30 @@ def perform_subject_study():
     handles, labels = ax.get_legend_handles_labels()
     plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
     plot_2_tiff(plot, 'measurements_real')
+
+
+def perform_patient_study():
+    filenames = [
+        'pat2/Messung_21.txt',
+        # 'pat3/Messung_25.txt',
+        'pat4/Messung_12.txt'
+    ]
+
+    colors = [
+        'blue',
+        'green',
+        'orangered'
+    ]
+
+    plot = plt.figure(figsize=(12, 10))
+
+    for filename, color in zip(filenames, colors):
+        plot = perform_all_patients(filename, color, plot)
+
+    ax = plt.subplot(2, 3, 6)
+    handles, labels = ax.get_legend_handles_labels()
+    plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
+    plot_2_tiff(plot, 'measurements_patients_real')
 
 
 def perform_overlall_rom(ft=18, vertical=True):
@@ -94,8 +118,9 @@ def perform_intercetion_analysis():
 
 
 if __name__ == '__main__':
-    perform_overlall_rom()
-    perform_intercetion_analysis()
-    perform_subject_study()
+    # perform_overlall_rom()
+    # perform_intercetion_analysis()
+    #perform_subject_study()
+    perform_patient_study()
 
 # %%

@@ -300,7 +300,7 @@ def build_average_fitted_data(model, data_list, id_list, color='none', plot=plt.
         avg_arrs[f'{key}_m'] = np.mean(loc_arrs, axis=0)
         avg_arrs[f'{key}_std'] = np.std(loc_arrs, axis=0)
 
-    print_data_infos(arr_fitted_data)
+    # print_data_infos(arr_fitted_data)
 
     plot = plot_fitted_arrs(avg_arrs, stats=True,
                             color=color, plot=plot, filename=filename, buil_ymax=ymax)
@@ -329,8 +329,8 @@ def perform_all_patients(filename, color, plot):
 
     all_polys = concat_polys(poti_polys, force_polys)
     all_data = lines2data(lines, all_polys)
-
-    if 'pat4' in filename:
+    if 'pat4/Messung_12' in filename:
+        print('TRUE')
         data_list = all_data_2_list_synchro(all_data, refill=1)
     else:
         data_list = all_data_2_list_synchro(all_data, refill=0)

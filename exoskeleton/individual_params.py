@@ -22,10 +22,13 @@ def get_params_by_name(filename: str):
         return chrissi_params()
     
     if 'pat2' in filename:
-        return niko_params()
+        return tina_params()
+    
+    if 'pat3' in filename:
+        return tina_params()
     
     if 'pat4' in filename:
-        return tina_params()
+        return niko_params()
 
     return mech_finger_params()
 
@@ -42,8 +45,8 @@ def new_config_params(params: dict):
     params['akt_y'] = -21.79
 
     # overall finger length:
-    print('Length_FINGER:', round(
-        params['l_pp'] + params['l_pm'] + params['l_pd']))
+    # print('Length_FINGER:', round(
+    #     params['l_pp'] + params['l_pm'] + params['l_pd']))
 
     return params
 
@@ -58,10 +61,10 @@ def apply_reference(params, ref_l8, l8_true=34):
         if type(params[loc_key]) == list:
             params[loc_key] = [params[loc_key][idx] *
                                factor for idx in range(len(params[loc_key]))]
-            print(f'{loc_key}: {params[loc_key]}')
+            # print(f'{loc_key}: {params[loc_key]}')
         else:
             params[loc_key] = params[loc_key] * factor
-            print(f'{loc_key}: {round(params[loc_key])}')
+            # print(f'{loc_key}: {round(params[loc_key])}')
 
     return params
 

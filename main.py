@@ -33,9 +33,9 @@ def perform_subject_study():
 
 def perform_patient_study():
     filenames = [
-        'pat2/Messung_21.txt',
-        # 'pat3/Messung_25.txt',
-        'pat4/Messung_12.txt'
+        'pat2/Messung_7.txt',
+        'pat3/Messung_7.txt',
+        'pat4/Messung_1.txt'
     ]
 
     colors = [
@@ -43,6 +43,39 @@ def perform_patient_study():
         'green',
         'orangered'
     ]
+
+    plot = plt.figure(figsize=(12, 10))
+
+    for filename, color in zip(filenames, colors):
+        plot = perform_all_patients(filename, color, plot)
+
+    ax = plt.subplot(2, 3, 6)
+    handles, labels = ax.get_legend_handles_labels()
+    plot.legend(handles, labels, loc='upper center', ncol=3, fontsize=14)
+    plot_2_tiff(plot, 'measurements_patients_real')
+
+
+def perform_comparison_study(mode=1):
+    if mode:
+        filenames = [
+            'pat2/Messung_21.txt',
+            'pat2/Messung_7.txt',
+        ]
+        colors = [
+            'blue',
+            'dodgerblue',
+        ]
+
+    else:
+        filenames = [
+            'pat4/Messung_1.txt',
+            'pat4/Messung_12.txt'
+        ]
+
+        colors = [
+            'green',
+            'greenyellow'
+        ]
 
     plot = plt.figure(figsize=(12, 10))
 
@@ -120,7 +153,10 @@ def perform_intercetion_analysis():
 if __name__ == '__main__':
     # perform_overlall_rom()
     # perform_intercetion_analysis()
-    #perform_subject_study()
+    # perform_subject_study()
+
     perform_patient_study()
+    perform_comparison_study(0)
+    perform_comparison_study(1)
 
 # %%

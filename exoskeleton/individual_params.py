@@ -20,13 +20,13 @@ def get_params_by_name(filename: str):
 
     if 'chrissi' in filename:
         return chrissi_params()
-    
+
     if 'pat2' in filename:
         return tina_params()
-    
+
     if 'pat3' in filename:
         return tina_params()
-    
+
     if 'pat4' in filename:
         return niko_params()
 
@@ -161,6 +161,102 @@ def chrissi_params():
 
     # define reference and transform to standard_len
     ref_l8 = 81.32
+    params = apply_reference(params, ref_l8)
+
+    # define the l_act and l9 new
+    params = new_config_params(params)
+
+    return params
+
+
+def pat2_params():
+    """Finger"""
+    params = {}
+
+    # Phalanges:
+    params['l_pp'] = 149.70
+    params['l_pm'] = 67.79
+    params['l_pd'] = 69.98
+
+    # Abstand Verbindungsstecke zwischen Fingergelenken zu Oberseite der Fingerglieder
+    params['h_ap'] = 0  # we use the whole at once
+    params['h_pp'] = 54.27
+    params['h_pm'] = 52.29
+    params['h_pd'] = 40.67
+
+    params['d_gen'] = 49.16
+
+    # Position Gelenk A: Messen notwendig, Position relativ zu MCP muss bestimmt
+    # werden. Hier Werte aus mechanischem Finger gegeben, real aus Foto/Scan
+    # bestimmen
+    params['A'] = [41.01, 77.75]
+
+    # define reference and transform to standard_len
+    ref_l8 = 120.07
+    params = apply_reference(params, ref_l8)
+
+    # define the l_act and l9 new
+    params = new_config_params(params)
+
+    return params
+
+
+def pat3_params():
+    """Finger"""
+    params = {}
+
+    # Phalanges:
+    params['l_pp'] = 151.01
+    params['l_pm'] = 94.69
+    params['l_pd'] = 97.63
+
+    # Abstand Verbindungsstecke zwischen Fingergelenken zu Oberseite der Fingerglieder
+    params['h_ap'] = 0  # we use the whole at once
+    params['h_pp'] = 65.17
+    params['h_pm'] = 64.49
+    params['h_pd'] = 49.97
+
+    params['d_gen'] = 36.36
+
+    # Position Gelenk A: Messen notwendig, Position relativ zu MCP muss bestimmt
+    # werden. Hier Werte aus mechanischem Finger gegeben, real aus Foto/Scan
+    # bestimmen
+    params['A'] = [41.16, 87.10]
+
+    # define reference and transform to standard_len
+    ref_l8 = 148.90
+    params = apply_reference(params, ref_l8)
+
+    # define the l_act and l9 new
+    params = new_config_params(params)
+
+    return params
+
+
+def pat4_params():
+    """Finger"""
+    params = {}
+
+    # Phalanges:
+    params['l_pp'] = 226.48
+    params['l_pm'] = 145.89
+    params['l_pd'] = 144.33
+
+    # Abstand Verbindungsstecke zwischen Fingergelenken zu Oberseite der Fingerglieder
+    params['h_ap'] = 0  # we use the whole at once
+    params['h_pp'] = 75.45
+    params['h_pm'] = 80.92
+    params['h_pd'] = 58.97
+
+    params['d_gen'] = 60.74
+
+    # Position Gelenk A: Messen notwendig, Position relativ zu MCP muss bestimmt
+    # werden. Hier Werte aus mechanischem Finger gegeben, real aus Foto/Scan
+    # bestimmen
+    params['A'] = [49.78, 119.35]
+
+    # define reference and transform to standard_len
+    ref_l8 = 184.63
     params = apply_reference(params, ref_l8)
 
     # define the l_act and l9 new

@@ -22,13 +22,13 @@ def get_params_by_name(filename: str):
         return chrissi_params()
 
     if 'pat2' in filename:
-        return tina_params()
+        return pat2_params()
 
     if 'pat3' in filename:
-        return tina_params()
+        return pat3_params()
 
     if 'pat4' in filename:
-        return niko_params()
+        return pat4_params()
 
     return mech_finger_params()
 
